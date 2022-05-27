@@ -126,16 +126,6 @@ func (h Hand) CountBySuit() []int {
 	return counts
 }
 
-func (h Hand) Combs(n int, f func(Hand) error) error {
-	comb := make(Hand, n)
-	return Combs(len(h), n, func(is []int) error {
-		for i, j := range is {
-			comb[i] = h[j]
-		}
-		return f(comb)
-	})
-}
-
 func (h Hand) IsRun() bool {
 	for i := 1; i < len(h); i++ {
 		if h[i].Rank != h[i-1].Rank+1 {

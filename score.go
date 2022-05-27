@@ -146,7 +146,10 @@ func Score(hand Hand, cut Card) ScoreCard {
 	// Pairs, runs, fifteens
 	var runLength int
 	for n := 5; n > 1; n-- {
-		handWithCut.Combs(n, func(h Hand) error {
+		c := NewCombination(len(handWithCut), n)
+		h := make(Hand, n)
+		for c.Next() {
+			h = Select(c.Comb(), handWithCut, h)
 			if n == 2 && h.IsSameRank() {
 				sc = append(sc, Pair{h.Copy()})
 			}
@@ -157,8 +160,7 @@ func Score(hand Hand, cut Card) ScoreCard {
 			if h.SumRanks() == 15 {
 				sc = append(sc, Total{h.Copy()})
 			}
-			return nil
-		})
+		}
 	}
 	return sc
 }

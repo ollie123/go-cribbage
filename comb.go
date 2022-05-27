@@ -1,41 +1,63 @@
 package main
 
-import "errors"
+type Combination struct {
+	n, r       int
+	comb       []int
+	done       bool
+	nextCalled bool
+}
 
-var ErrBreak = errors.New("break")
+func NewCombination(n, r int) *Combination {
+	return &Combination{
+		n:    n,
+		r:    r,
+		comb: make([]int, r),
+	}
+}
 
-func Combs(n, r int, f func([]int) error) error {
+func (c *Combination) Comb() []int {
+	return c.comb
+}
+
+func (c *Combination) Next() bool {
+	if c.done {
+		return false
+	}
 	var i int
-	comb := make([]int, r)
-	for i = 0; i < r; i++ {
-		comb[i] = i
+
+	// Generate the initial combination on the first call to Next.
+	if !c.nextCalled {
+		c.nextCalled = true
+		for i = 0; i < c.r; i++ {
+			c.comb[i] = i
+		}
+		return true
 	}
-	if err := f(comb); err != nil {
-		if err == ErrBreak {
-			err = nil
-		}
-		return err
-	}
-	for {
-		done := true
-		for i = r - 1; i >= 0; i-- {
-			if comb[i] != i+n-r {
-				done = false
-				break
-			}
-		}
-		if done {
-			return nil
-		}
-		comb[i]++
-		for j := i + 1; j < r; j++ {
-			comb[j] = comb[j-1] + 1
-		}
-		if err := f(comb); err != nil {
-			if err == ErrBreak {
-				err = nil
-			}
-			return err
+
+	// Advance to the next combination on subsequent calls.
+	c.done = true
+	for i = c.r - 1; i >= 0; i-- {
+		if c.comb[i] != i+c.n-c.r {
+			c.done = false
+			break
 		}
 	}
+	if c.done {
+		return false
+	}
+	c.comb[i]++
+	for j := i + 1; j < c.r; j++ {
+		c.comb[j] = c.comb[j-1] + 1
+	}
+	return true
+}
+
+func Select[T any](indices []int, x, out []T) []T {
+	if len(indices) > len(out) {
+		panic("len(indices) > len(out)")
+	}
+	for i, j := range indices {
+		out[i] = x[j]
+	}
+	return out
 }
