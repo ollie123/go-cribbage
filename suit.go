@@ -32,8 +32,8 @@ type suit struct {
 }
 
 var suits = [numSuits]suit{
-	{color.New(color.FgHiWhite), "♣", "Clubs"},
-	{color.New(color.FgRed), "♦", "Diamonds"},
-	{color.New(color.FgRed), "♥", "Hearts"},
-	{color.New(color.FgHiWhite), "♠", "Spades"},
+	{color.New(color.BgHiWhite, color.FgBlack), "♣", "Clubs"},
+	{color.New(color.BgHiWhite, color.FgRed), "♦", "Diamonds"},
+	{color.New(color.BgHiWhite, color.FgRed), "♥", "Hearts"},
+	{color.New(color.BgHiWhite, color.FgBlack), "♠", "Spades"},
 }
