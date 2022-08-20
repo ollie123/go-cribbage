@@ -25,6 +25,19 @@ func ParseCard(s string) (Card, error) {
 	return Card{rank, suit}, nil
 }
 
+func ParseHand(s string) (Hand, error) {
+	ss := strings.Fields(s)
+	hand := make(Hand, len(ss))
+	for i, s := range ss {
+		c, err := ParseCard(s)
+		if err != nil {
+			return nil, err
+		}
+		hand[i] = c
+	}
+	return hand, nil
+}
+
 func ParseRank(s string) (Rank, error) {
 	switch s {
 	case "a", "A":
@@ -60,17 +73,4 @@ func ParseSuit(s string) (Suit, error) {
 		return Spades, nil
 	}
 	return 0, fmt.Errorf("invalid suit: %v", s)
-}
-
-func ParseHand(s string) (Hand, error) {
-	ss := strings.Fields(s)
-	hand := make(Hand, len(ss))
-	for i, s := range ss {
-		c, err := ParseCard(s)
-		if err != nil {
-			return nil, err
-		}
-		hand[i] = c
-	}
-	return hand, nil
 }

@@ -1,12 +1,36 @@
 package main
 
+import "sort"
+
 type Scorable interface {
 	Hand() Hand
-	Order() int
+	Priority() int
 	Score() int
 	Type() string
 }
 
+// Fifteen represents two or more cards whose ranks add to 15 (Aces low, face cards counting as 10).
+type Fifteen struct {
+	hand Hand
+}
+
+func (f Fifteen) Hand() Hand {
+	return f.hand
+}
+
+func (f Fifteen) Priority() int {
+	return 1
+}
+
+func (f Fifteen) Score() int {
+	return 2
+}
+
+func (f Fifteen) Type() string {
+	return "Fifteen"
+}
+
+// Flush represents four or five cards with the same suit.
 type Flush struct {
 	hand Hand
 }
@@ -15,7 +39,7 @@ func (f Flush) Hand() Hand {
 	return f.hand
 }
 
-func (f Flush) Order() int {
+func (f Flush) Priority() int {
 	return 0
 }
 
@@ -27,46 +51,28 @@ func (f Flush) Type() string {
 	return "Flush"
 }
 
-type Run struct {
-	hand Hand
+// Nobs represents a Jack in the hand with the same suit as the cut card.
+type Nobs struct {
+	card Card
 }
 
-func (r Run) Hand() Hand {
-	return r.hand
+func (k Nobs) Hand() Hand {
+	return Hand{k.card}
 }
 
-func (r Run) Order() int {
-	return 2
+func (k Nobs) Priority() int {
+	return 4
 }
 
-func (r Run) Score() int {
-	return len(r.hand)
-}
-
-func (r Run) Type() string {
-	return "Run"
-}
-
-type Total struct {
-	hand Hand
-}
-
-func (t Total) Hand() Hand {
-	return t.hand
-}
-
-func (t Total) Order() int {
+func (k Nobs) Score() int {
 	return 1
 }
 
-func (t Total) Score() int {
-	return 2
+func (k Nobs) Type() string {
+	return "Nobs"
 }
 
-func (t Total) Type() string {
-	return "Fifteen"
-}
-
+// Pair represents two cards with the same rank.
 type Pair struct {
 	hand Hand
 }
@@ -75,7 +81,7 @@ func (p Pair) Hand() Hand {
 	return p.hand
 }
 
-func (p Pair) Order() int {
+func (p Pair) Priority() int {
 	return 3
 }
 
@@ -87,41 +93,36 @@ func (p Pair) Type() string {
 	return "Pair"
 }
 
-type Nobs struct {
-	card Card
+// Run represents three or more cards whose ranks are consecutive.
+type Run struct {
+	hand Hand
 }
 
-func (n Nobs) Hand() Hand {
-	return Hand{n.card}
+func (r Run) Hand() Hand {
+	return r.hand
 }
 
-func (n Nobs) Order() int {
-	return 4
+func (r Run) Priority() int {
+	return 2
 }
 
-func (n Nobs) Score() int {
-	return 1
+func (r Run) Score() int {
+	return len(r.hand)
 }
 
-func (n Nobs) Type() string {
-	return "Nobs"
+func (r Run) Type() string {
+	return "Run"
 }
 
 type ScoreCard []Scorable
 
-func (sc ScoreCard) Len() int {
-	return len(sc)
-}
-
-func (sc ScoreCard) Swap(i, j int) {
-	sc[i], sc[j] = sc[j], sc[i]
-}
-
-func (sc ScoreCard) Less(i, j int) bool {
-	if sc[i].Order() != sc[j].Order() {
-		return sc[i].Order() < sc[j].Order()
-	}
-	return len(sc[i].Hand()) < len(sc[j].Hand())
+func (sc ScoreCard) SortByPriority() {
+	sort.Slice(sc, func(i, j int) bool {
+		if sc[i].Priority() != sc[j].Priority() {
+			return sc[i].Priority() < sc[j].Priority()
+		}
+		return len(sc[i].Hand()) < len(sc[j].Hand())
+	})
 }
 
 func Score(hand Hand, cut Card) ScoreCard {
@@ -150,15 +151,21 @@ func Score(hand Hand, cut Card) ScoreCard {
 		h := make(Hand, n)
 		for c.Next() {
 			h = Select(c.Comb(), handWithCut, h)
+
+			// Pair
 			if n == 2 && h.IsSameRank() {
 				sc = append(sc, Pair{h.Copy()})
 			}
+
+			// Run
 			if n >= 3 && n <= 5 && (runLength == 0 || runLength == n) && h.IsRun() {
 				runLength = len(h)
 				sc = append(sc, Run{h.Copy()})
 			}
+
+			// Fifteen
 			if h.SumRanks() == 15 {
-				sc = append(sc, Total{h.Copy()})
+				sc = append(sc, Fifteen{h.Copy()})
 			}
 		}
 	}

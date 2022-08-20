@@ -1,40 +1,39 @@
 package main
 
+import "github.com/fatih/color"
+
 type Suit int
+
+func (s Suit) Color() *color.Color {
+	return suits[s].color
+}
+
+func (s Suit) ShortString() string {
+	return suits[s].shortString
+}
+
+func (s Suit) String() string {
+	return suits[s].string
+}
 
 const (
 	Clubs Suit = iota
 	Diamonds
 	Hearts
 	Spades
+	numSuits
+
+	NumSuits = int(numSuits)
 )
 
-const NumSuits = 4
-
-var suitStrings = []string{
-	"Clubs",
-	"Diamonds",
-	"Hearts",
-	"Spades",
+type suit struct {
+	color               *color.Color
+	shortString, string string
 }
 
-var suitColors = []Color{
-	BrightWhite,
-	Red,
-	Red,
-	BrightWhite,
-}
-
-func (s Suit) Color() Color {
-	return suitColors[s]
-}
-
-func (s Suit) String() string {
-	return suitStrings[s]
-}
-
-var suitShortStrings = []string{"♣", "♦", "♥", "♠"}
-
-func (s Suit) ShortString() string {
-	return suitShortStrings[s]
+var suits = [numSuits]suit{
+	{color.New(color.FgHiWhite), "♣", "Clubs"},
+	{color.New(color.FgRed), "♦", "Diamonds"},
+	{color.New(color.FgRed), "♥", "Hearts"},
+	{color.New(color.FgHiWhite), "♠", "Spades"},
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 )
 
 type Card struct {
@@ -10,18 +9,14 @@ type Card struct {
 	Suit Suit
 }
 
-func (c Card) String() string {
-	return fmt.Sprintf("%s of %s", c.Rank, c.Suit)
+func (c Card) ColorString() string {
+	return c.Suit.Color().Sprint(c.Rank.ShortString() + c.Suit.ShortString())
 }
 
 func (c Card) ShortString() string {
 	return c.Rank.ShortString() + c.Suit.ShortString()
 }
 
-func (c Card) ColorString() string {
-	return c.Suit.Color().Format(c.Rank.ShortString() + c.Suit.ShortString())
-}
-
-func Random() Card {
-	return Card{Rank(rand.Intn(NumRanks)), Suit(rand.Intn(NumSuits))}
+func (c Card) String() string {
+	return fmt.Sprintf("%s of %s", c.Rank, c.Suit)
 }

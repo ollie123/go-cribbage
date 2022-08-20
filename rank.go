@@ -2,6 +2,23 @@ package main
 
 type Rank int
 
+func (r Rank) Score() int {
+	switch r {
+	case Jack, Queen, King:
+		return 10
+	default:
+		return int(r) + 1
+	}
+}
+
+func (r Rank) ShortString() string {
+	return ranks[r].shortString
+}
+
+func (r Rank) String() string {
+	return ranks[r].string
+}
+
 const (
 	Ace Rank = iota
 	Two
@@ -16,41 +33,27 @@ const (
 	Jack
 	Queen
 	King
+	numRanks
+
+	NumRanks = int(numRanks)
 )
 
-const NumRanks = 13
-
-var rankStrings = []string{
-	"Ace",
-	"Two",
-	"Three",
-	"Four",
-	"Five",
-	"Six",
-	"Seven",
-	"Eight",
-	"Nine",
-	"Ten",
-	"Jack",
-	"Queen",
-	"King",
+type rank struct {
+	shortString, string string
 }
 
-func (r Rank) String() string {
-	return rankStrings[r]
-}
-
-var rankShortStrings = []string{"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"}
-
-func (r Rank) ShortString() string {
-	return rankShortStrings[r]
-}
-
-func (r Rank) Score() int {
-	switch r {
-	case Jack, Queen, King:
-		return 10
-	default:
-		return int(r) + 1
-	}
+var ranks = [numRanks]rank{
+	{"A", "Ace"},
+	{"2", "Two"},
+	{"3", "Three"},
+	{"4", "Four"},
+	{"5", "Five"},
+	{"6", "Six"},
+	{"7", "Seven"},
+	{"8", "Eight"},
+	{"9", "Nine"},
+	{"10", "Ten"},
+	{"J", "Jack"},
+	{"Q", "Queen"},
+	{"K", "King"},
 }
