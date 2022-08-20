@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+
+	"github.com/fatih/color"
 )
 
 func main() {
@@ -46,10 +48,10 @@ func score(hand Hand, cut Card) {
 	var total int
 	sc := Score(hand, cut)
 	sc.SortByPriority()
-	fmt.Printf("Score for %s (%s)\n============\n", hand.ColorString(), cut.ColorString())
+	fmt.Fprintf(color.Output, "Score for %s (%s)\n============\n", hand.ColorString(), cut.ColorString())
 	for _, s := range sc {
 		total += s.Score()
-		fmt.Printf("%7s (%2d): %s\n", s.Type(), s.Score(), s.Hand().ColorString())
+		fmt.Fprintf(color.Output, "%7s (%2d): %s\n", s.Type(), s.Score(), s.Hand().ColorString())
 	}
 	fmt.Printf("============\n  Total (%2d)\n", total)
 }
